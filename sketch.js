@@ -9,7 +9,7 @@ function setup() {
 
     player = new Player();
 
-    for(var i=0; i<8; i++)
+    for(var i=0; i<2; i++)
         bolle[i] = new Bolla();
 
     frameRate(30);
@@ -29,14 +29,13 @@ function draw() {
     player.draw();
 }
 
-var mx, my;
 function mousePressed() {
-    mx = mouseX;
-    my = mouseY;
+    player.destX = (mouseX - W/2) + player.x;
+    player.destY = (mouseY - H/2) + player.y;
 }
-function mouseReleased() {
-    player.vx += 100*(mouseX - mx)/W;
-    player.vy += 100*(mouseY - my)/H;
+function mouseDragged() {
+    player.destX = (mouseX - W/2) + player.x;
+    player.destY = (mouseY - H/2) + player.y;
 }
 
 function distMod(a, b, mod) {
@@ -45,85 +44,90 @@ function distMod(a, b, mod) {
 
 
 function Player() {
-    this.x = random(W);
-    this.y = random(H);
+    this.x = random(-W/2, W/2);
+    this.y = random(-H/2, H/2);
     this.r = 8;
 
-    this.vx = 0;
-    this.vy = 0;
+    this.destX = this.x;
+    this.destY = this.y;
 
     this.update = function() {
+
+        if( mouseX>=0 && mouseX<W && mouseY>=0 && mouseY<H ) {
+            player.destX = (mouseX - W/2) + player.x;
+            player.destY = (mouseY - H/2) + player.y;
+            v = dist(0,0, mouseX-W/2, mouseY-H/2)/100;
+            this.v = 10;
+        } else {
+            this.v *= 0.8;
+        }
+
+        var d = dist(this.x, this.y, this.destX, this.destY)
+        var v = this.v;
+        if( d < this.r ) {
+            v = d;
+        } else if(d < 2) {
+            v = 0;
+        }
+
         bolle.forEach(function(b) {
-            var d = dist(this.x, this.y, b.x, b.y);
-            if(d < this.r + b.r) {
-                theta = atan2(this.y - b.y, this.x - b.x);
-
-                this.vx += min(10, this.x - b.x);
-                this.vy += min(10, this.y - b.y);
-
-                this.vx *= 0.5;
-                this.vy *= 0.5;
-
-                b.vx += b.x - this.x;
-                b.vy += b.y - this.y;
+            var d = dist(this.x, this.y, b.x, b.y) - b.r - this.r;
+            if( d < 0 ) {
+                b.collide();
             }
         }, this);
 
-        this.vx *= 0.9;
-        this.vy *= 0.9;
-
-        this.vx = min(this.vx, 10);
-        this.vy = min(this.vy, 10);
-
-        this.x += this.vx;
-        this.y += this.vy;
-
-        this.x %= W;
-        this.y %= H;
+        var dir = atan2(this.destY - this.y, this.destX - this.x);
+        this.x += v * cos(dir);
+        this.y += v * sin(dir);
     };
 
     this.draw = function() {
         fill(128);
         noStroke();
-        for(var i=-1; i<=1; i++)
-        for(var j=-1; j<=1; j++)
-            ellipse( i*W + this.x, j*H + this.y, this.r*2, this.r*2);
+        ellipse( W/2, H/2, this.r*2, this.r*2);
     };
 }
 
 
-function Bolla() {
-    this.x = random(W);
-    this.y = random(H);
-    this.r = random( (W+H) * 2) + (W+H)>>4;
+function Bolla(x=0, y=0, r=100) {
+    this.x = x;
+    this.y = y;
+    this.r = r;
+    this.alive = true;
 
-    this.vx = 0;
-    this.vy = 0;
+    this.color = function() {
+        fill(255, 100);
+        noStroke();
+    };
 
     this.update = function() {
-        bolle.forEach(function(b) {
-            this.vx += distMod(this.x + this.r, b.x + b.r, W);
-            this.vy += distMod(this.y + this.r, b.y + b.r, H);
-        }, this);
+    };
 
-        this.vx /= 3;
-        this.vy /= 3;
+    this.collide = function() {
+        if(this.alive) {
+            this.alive = false;
 
-        this.x += this.vx;
-        this.y += this.vy;
+            this.color = function() {
+                fill(128, 100);
+                noStroke();
+            };
 
-        this.x %= W;
-        this.y %= H;
-
-        this.r += (this.vx/W + this.vy/H)/2;
+            var N = 7;
+            for(var i=0; i<N; i++) {
+                var r = random(this.r*4, this.r*16) + dist(0,0, this.x, this.y);
+                var th = random(-PI/N, PI/N);
+                bolle[bolle.length] = new Bolla(
+                    this.x + r*sin(i*2*PI/N + th),
+                    this.y + r*cos(i*2*PI/N + th),
+                    random(this.r/2, this.r*2)
+                );
+            }
+        }
     };
 
     this.draw = function() {
-        fill(255, 50);
-        //stroke(230);
-        noStroke();
-        for(var i=-1; i<=1; i++)
-        for(var j=-1; j<=1; j++)
-            ellipse( i*W + this.x, j*H + this.y, this.r*2, this.r*2);
+        this.color();
+        ellipse( this.x - (player.x-W/2), this.y - (player.y-H/2), this.r*2, this.r*2);
     };
 }
