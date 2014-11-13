@@ -9,8 +9,7 @@ function setup() {
 
     player = new Player();
 
-    for(var i=0; i<2; i++)
-        bolle[i] = new Bolla();
+    bolle[0] = new Bolla();
 
     frameRate(30);
 }
@@ -30,12 +29,8 @@ function draw() {
 }
 
 function mousePressed() {
-    player.destX = (mouseX - W/2) + player.x;
-    player.destY = (mouseY - H/2) + player.y;
 }
 function mouseDragged() {
-    player.destX = (mouseX - W/2) + player.x;
-    player.destY = (mouseY - H/2) + player.y;
 }
 
 function distMod(a, b, mod) {
@@ -70,22 +65,30 @@ function Player() {
             v = 0;
         }
 
+        var dir = atan2(this.destY - this.y, this.destX - this.x);
+        var x = v * cos(dir);
+        var y = v * sin(dir);
+
         bolle.forEach(function(b) {
             var d = dist(this.x, this.y, b.x, b.y) - b.r - this.r;
+            var th = atan2(this.y - b.y, this.x - b.x);
             if( d < 0 ) {
                 b.collide();
+                this.x = b.x + (b.r + this.r*2)*cos(th);
+                this.y = b.y + (b.r + this.r*2)*sin(th);
             }
         }, this);
 
-        var dir = atan2(this.destY - this.y, this.destX - this.x);
         this.x += v * cos(dir);
         this.y += v * sin(dir);
     };
 
     this.draw = function() {
-        fill(128);
-        noStroke();
-        ellipse( W/2, H/2, this.r*2, this.r*2);
+        if( dist(this.x, this.y, player.x, player.y)-this.r < 2*max(W,H) ) {
+            fill(128);
+            noStroke();
+            ellipse( W/2, H/2, this.r*2, this.r*2);
+        }
     };
 }
 
@@ -109,18 +112,18 @@ function Bolla(x=0, y=0, r=100) {
             this.alive = false;
 
             this.color = function() {
-                fill(128, 100);
+                fill(128, 64);
                 noStroke();
             };
 
             var N = 7;
             for(var i=0; i<N; i++) {
-                var r = random(this.r*4, this.r*16) + dist(0,0, this.x, this.y);
+                var r = random(this.r*2, this.r*20);//+random(dist(0,0, this.x, this.y));
                 var th = random(-PI/N, PI/N);
                 bolle[bolle.length] = new Bolla(
                     this.x + r*sin(i*2*PI/N + th),
                     this.y + r*cos(i*2*PI/N + th),
-                    random(this.r/2, this.r*2)
+                    max(2, random(this.r/8, min(this.r*2, min(W,H))))
                 );
             }
         }
