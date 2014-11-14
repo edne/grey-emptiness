@@ -3,6 +3,7 @@ var H = 600;
 
 var player;
 var bolle;
+var scores;
 
 function setup() {
     createCanvas(W, H);
@@ -12,6 +13,9 @@ function setup() {
     bolle = [];
     bolle[0] = new Bolla();
 
+    scores = 0;
+
+    //textFont('monospace');
     frameRate(30);
 }
 
@@ -22,6 +26,11 @@ function draw() {
     player.update();
 
     background(200);
+
+    fill(255, 128);
+    noStroke();
+    textSize(32);
+    text(''+scores, 10,10,60,60);
 
     bolle.forEach(function(b) {
         b.draw();
@@ -121,6 +130,7 @@ function Bolla(x=0, y=0, r=100) {
     this.collide = function() {
         if(this.alive) {
             this.alive = false;
+            scores++;
 
             this.color = function() {
                 fill(128, 64);
