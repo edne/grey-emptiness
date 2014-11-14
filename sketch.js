@@ -11,7 +11,7 @@ function setup() {
     player = new Player();
 
     bolle = [];
-    bolle[0] = new Bolla();
+    bolle[0] = new Bolla(0, 0, 100);
 
     scores = 0;
 
@@ -30,7 +30,7 @@ function draw() {
     fill(255, 128);
     noStroke();
     textSize(32);
-    text(''+scores, 10,10,60,60);
+    text(''+scores, 8,16,W,32);
 
     bolle.forEach(function(b) {
         b.draw();
@@ -110,7 +110,7 @@ function Player() {
 }
 
 
-function Bolla(x=0, y=0, r=100) {
+function Bolla(x, y, r) {
     this.x = x;
     this.y = y;
     this.r0 = r;
