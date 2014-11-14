@@ -33,7 +33,6 @@ function setup() {
     filter.freq(1000);
     osc.connect(filter);
 
-    //textFont('monospace');
     frameRate(30);
 }
 
@@ -94,7 +93,6 @@ function Player() {
         if( mouseX>=0 && mouseX<W && mouseY>=0 && mouseY<H ) {
             player.destX = (mouseX - W/2) + player.x;
             player.destY = (mouseY - H/2) + player.y;
-            v = dist(0,0, mouseX-W/2, mouseY-H/2)/100;
             this.v = 10;
         } else {
             this.v *= 0.8;
@@ -170,7 +168,7 @@ function Bolla(x, y, r) {
 
             var N = 7;
             for(var i=0; i<N; i++) {
-                var r = random(this.r*2, this.r*20);//+random(dist(0,0, this.x, this.y));
+                var r = random(this.r*2, this.r*20);
                 var th = random(-PI/N, PI/N);
                 bolle[bolle.length] = new Bolla(
                     this.x + r*sin(i*2*PI/N + th),
@@ -179,8 +177,7 @@ function Bolla(x, y, r) {
                 );
             }
 
-            //osc.freq(400-this.r);
-            osc.freq(20000/this.r);
+            osc.freq(max(20, 20000/this.r));
             env.play(osc);
         } else {
         }
