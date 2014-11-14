@@ -4,6 +4,7 @@ var H = 600;
 var player;
 var bolle;
 var scores;
+var gameOver;
 
 function setup() {
     createCanvas(W, H);
@@ -14,31 +15,45 @@ function setup() {
     bolle[0] = new Bolla(0, 0, 100);
 
     scores = 0;
+    gameOver = false;
 
     //textFont('monospace');
     frameRate(30);
 }
 
 function draw() {
-    bolle.forEach(function(b) {
-        b.update();
-    });
-    player.update();
+    if( gameOver ) {
+        background(200);
 
-    background(200);
+        fill(255, 128);
+        noStroke();
+        textAlign(CENTER)
+        textSize(64);
+        text(''+scores, W/2+4, H/2+8, W, H);
+    } else {
+        bolle.forEach(function(b) {
+            b.update();
+        });
+        player.update();
 
-    fill(255, 128);
-    noStroke();
-    textSize(32);
-    text(''+scores, 8,16,W,32);
+        background(200);
 
-    bolle.forEach(function(b) {
-        b.draw();
-    });
-    player.draw();
+        fill(255, 128);
+        noStroke();
+        textSize(32);
+        text(''+scores, 8,16,W,32);
+
+        bolle.forEach(function(b) {
+            b.draw();
+        });
+        player.draw();
+    }
 }
 
 function mousePressed() {
+    if( gameOver ) {
+        setup();
+    }
 }
 function mouseDragged() {
 }
@@ -96,7 +111,7 @@ function Player() {
         this.y += v * sin(dir);
 
         if( this.r <= 0 ) {
-            setup(); // GAME OVER
+            gameOver = true;
         }
     };
 
