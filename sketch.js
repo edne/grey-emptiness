@@ -96,7 +96,9 @@ function Player() {
 function Bolla(x=0, y=0, r=100) {
     this.x = x;
     this.y = y;
+    this.r0 = r;
     this.r = r;
+    this.t0 = millis()/1000;
     this.alive = true;
 
     this.color = function() {
@@ -105,6 +107,7 @@ function Bolla(x=0, y=0, r=100) {
     };
 
     this.update = function() {
+        this.r = this.r0 + (this.r0/8)*sin(0.1*millis()/1000 - this.t0);
     };
 
     this.collide = function() {
