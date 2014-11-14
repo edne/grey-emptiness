@@ -2,13 +2,14 @@ var W = 600;
 var H = 600;
 
 var player;
-var bolle = [];
+var bolle;
 
 function setup() {
     createCanvas(W, H);
 
     player = new Player();
 
+    bolle = [];
     bolle[0] = new Bolla();
 
     frameRate(30);
@@ -41,12 +42,14 @@ function distMod(a, b, mod) {
 function Player() {
     this.x = random(-W/2, W/2);
     this.y = random(-H/2, H/2);
+    this.r0 = 8;
     this.r = 8;
 
     this.destX = this.x;
     this.destY = this.y;
 
     this.update = function() {
+        this.r = min(this.r0, this.r+0.1);
 
         if( mouseX>=0 && mouseX<W && mouseY>=0 && mouseY<H ) {
             player.destX = (mouseX - W/2) + player.x;
@@ -76,11 +79,16 @@ function Player() {
                 b.collide();
                 this.x = b.x + (b.r + this.r*2)*cos(th);
                 this.y = b.y + (b.r + this.r*2)*sin(th);
+                this.r -= 0.2;
             }
         }, this);
 
         this.x += v * cos(dir);
         this.y += v * sin(dir);
+
+        if( this.r <= 0 ) {
+            setup(); // GAME OVER
+        }
     };
 
     this.draw = function() {
