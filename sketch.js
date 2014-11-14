@@ -7,7 +7,7 @@ var scores;
 var gameOver;
 
 var osc, env;
-var delay, filter;
+var delay, reverb, filter;
 
 function setup() {
     createCanvas(W, H);
@@ -24,10 +24,13 @@ function setup() {
     osc.start();
     osc.amp(0);
 
-    env = new p5.Env(.01, 1, .2, .1);
+    env = new p5.Env(0.01, 0.8, 0.2, 0.1, 0);
 
     delay = new p5.Delay();
-    delay.process(osc, 0.16, .9, 230);
+    delay.process(osc, 2, .8, 100);
+
+    reverb = new p5.Reverb();
+    reverb.process(osc, 3, 2);
 
     filter = new p5.LowPass();
     filter.freq(1000);
@@ -67,6 +70,7 @@ function draw() {
 
 function mousePressed() {
     if( gameOver ) {
+        delay.amp(0);
         setup();
     }
 }
