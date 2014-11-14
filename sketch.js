@@ -6,6 +6,9 @@ var bolle;
 var scores;
 var gameOver;
 
+var osc, env;
+var delay, filter;
+
 function setup() {
     createCanvas(W, H);
 
@@ -16,6 +19,19 @@ function setup() {
 
     scores = 0;
     gameOver = false;
+
+    osc = new p5.TriOsc();
+    osc.start();
+    osc.amp(0);
+
+    env = new p5.Env(.01, 1, .2, .1);
+
+    delay = new p5.Delay();
+    delay.process(osc, 0.16, .9, 230);
+
+    filter = new p5.LowPass();
+    filter.freq(1000);
+    osc.connect(filter);
 
     //textFont('monospace');
     frameRate(30);
@@ -162,6 +178,11 @@ function Bolla(x, y, r) {
                     max(2, random(this.r/8, min(this.r*2, min(W,H))))
                 );
             }
+
+            //osc.freq(400-this.r);
+            osc.freq(20000/this.r);
+            env.play(osc);
+        } else {
         }
     };
 
