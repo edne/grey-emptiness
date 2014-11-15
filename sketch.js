@@ -27,7 +27,7 @@ function setup() {
     env = new p5.Env(0.01, 0.8, 0.2, 0.1, 0);
 
     delay = new p5.Delay();
-    delay.process(osc, 2, .8, 100);
+    delay.process(osc, 2, .8, 200);
 
     reverb = new p5.Reverb();
     reverb.process(osc, 3, 2);
