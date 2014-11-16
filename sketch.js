@@ -94,7 +94,10 @@ function Player() {
     this.update = function() {
         this.r = min(this.r0, this.r+0.1);
 
-        if( mouseX>=0 && mouseX<W && mouseY>=0 && mouseY<H ) {
+        if( mouseX>=0 && mouseX<W &&
+            mouseY>=0 && mouseY<H &&
+            dist(mouseX, mouseY, W/2, H/2) > this.r*4
+         ) {
             player.destX = (mouseX - W/2) + player.x;
             player.destY = (mouseY - H/2) + player.y;
             this.v = 10;
