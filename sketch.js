@@ -5,6 +5,7 @@ var player;
 var bolle;
 var scores;
 var gameOver;
+var paused;
 
 var osc, env;
 var delay, reverb, filter;
@@ -19,6 +20,7 @@ function setup() {
 
     scores = 0;
     gameOver = false;
+    paused = false;
 
     osc = new p5.TriOsc();
     osc.start();
@@ -49,10 +51,12 @@ function draw() {
         textSize(64);
         text(''+scores, W/2+4, H/2+8, W, H);
     } else {
-        bolle.forEach(function(b) {
-            b.update();
-        });
-        player.update();
+        if(!paused) {
+            bolle.forEach(function(b) {
+                b.update();
+            });
+            player.update();
+        }
 
         background(200);
 
@@ -65,6 +69,12 @@ function draw() {
             b.draw();
         });
         player.draw();
+    }
+}
+
+function keyTyped() {
+    if(key === ' ') {
+        paused = !paused;
     }
 }
 
